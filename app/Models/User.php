@@ -44,4 +44,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the companies for the user.
+     */
+    public function companies()
+    {
+        return $this->hasMany(Company::class);
+    }
 }
