@@ -30,6 +30,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/cidades/{estado_id}', [CompanyController::class, 'getCidades']);
     Route::get('/cep/{cep}', [CompanyController::class, 'getCep']);
 
+    Route::get('/testes', function () {
+        return view('layouts.tests');
+    });
+
 });
 
 require __DIR__.'/auth.php';

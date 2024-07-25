@@ -16,6 +16,8 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "filepond": "^4.31.1",
+        "filepond-plugin-image-preview": "^4.6.12",
         "inputmask": "^5.0.9"
     }
 }

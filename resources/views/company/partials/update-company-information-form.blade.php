@@ -37,7 +37,7 @@
         <div class="flex space-x-4 mt-4">
             <div class="flex-1 w-1/4">
                 <x-input-label for="ddd" :value="'DDD'" />
-                <x-text-input id="ddd" name="ddd" type="text" class="mt-1 block w-full" :value="'('.old('ddd', $company->ddd).')'"
+                <x-text-input id="ddd" name="ddd" type="text" class="mt-1 block w-full" :value="'(' . old('ddd', $company->ddd) . ')'"
                     required autocomplete="ddd" />
                 <x-input-error class="mt-2" :messages="$errors->get('ddd')" />
             </div>
@@ -61,7 +61,7 @@
         <div x-data="fetchCidades()" x-init="init()" class="flex space-x-4">
             <div class="flex-1">
                 <x-input-label for="state" :value="'Estado'" />
-                <select id="state" name="state" class="mt-1 block w-full" x-on:change="fetchCidades"
+                <select id="state" name="state" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" x-on:change="fetchCidades"
                     x-model="selectedEstado">
                     <option value="">Selecione um estado</option>
                     @foreach ($estados as $estado)
@@ -76,7 +76,7 @@
 
             <div class="flex-1 ml-2">
                 <x-input-label for="city" :value="'Cidade'" />
-                <select id="city" name="city" class="mt-1 block w-full" required autofocus
+                <select id="city" name="city" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required autofocus
                     autocomplete="city_id" x-model="selectedCidade">
                     <option value="">Selecione uma cidade</option>
                     <template x-for="cidade in cidades" :key="cidade.id">
@@ -87,7 +87,7 @@
             </div>
         </div>
 
-        <div x-data="getCep()" x-init="init()"  class="space-y-4">
+        <div x-data="getCep()" x-init="init()" class="space-y-4">
             <div class="flex space-x-4">
                 <div class="flex-1">
                     <div>
@@ -125,16 +125,38 @@
 
                 <div class="flex-1">
                     <x-input-label for="numero" :value="'Número'" />
-                    <x-text-input id="numero" name="numero" type="text" class="mt-1 block w-full"
-                       autofocus autocomplete="numero" 
-                        :value=" old('numero', $company->numero) " />
+                    <x-text-input id="numero" name="numero" type="text" class="mt-1 block w-full" autofocus
+                        autocomplete="numero" :value="old('numero', $company->numero)" />
                     <x-input-error class="mt-2" :messages="$errors->get('numero')" />
                 </div>
             </div>
 
         </div>
     </form>
+    <hr>
+
+    <hr class="my-4" />
+
+    <header>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+            {{ 'Logotipo' }}
+        </h2>
+
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            {{ 'Adicione uma imagem que identifique sua empresa.' }}
+        </p>
+    </header>
+
+    <div x-data x-init="FilePond.create($refs.input, {
+        labelIdle: 'Arraste e solte arquivos aqui ou clique para selecionar',
+        labelFileWaitingForSize: 'Calculando tamanho do arquivo',
+        labelFileProcessing: 'Processando arquivo',
+        imagePreviewHeight: 170
+      })">
+        <input type="file" x-ref="input" class="">
+      </div>
 </section>
+
 
 <script>
     function fetchCidades() {
@@ -164,29 +186,29 @@
     }
 
     function getCep() {
-    return {
-        cep: '{{ old('cep', $company->cep) }}',
-        logradouro: '{{ old('logradouro', $company->logradouro) }}',
-        complemento: '{{ old('complemento', $company->complemento) }}',
-        bairro: '{{ old('bairro', $company->bairro) }}',
-        fetchCep() {
-            
-            if (this.cep) {
-                fetch(`/cep/${this.cep}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        this.bairro = data.bairro;
-                        this.logradouro = data.logradouro;
-                        this.complemento = data.complemento;
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+        return {
+            cep: '{{ old('cep', $company->cep) }}',
+            logradouro: '{{ old('logradouro', $company->logradouro) }}',
+            complemento: '{{ old('complemento', $company->complemento) }}',
+            bairro: '{{ old('bairro', $company->bairro) }}',
+            fetchCep() {
+
+                if (this.cep) {
+                    fetch(`/cep/${this.cep}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.bairro = data.bairro;
+                            this.logradouro = data.logradouro;
+                            this.complemento = data.complemento;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }
+            },
+            init() {
+                // Não é necessário inicializar a busca aqui
             }
-        },
-        init() {
-            // Não é necessário inicializar a busca aqui
         }
     }
-}
 </script>

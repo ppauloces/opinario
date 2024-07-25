@@ -14,6 +14,9 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
+    
 </head>
 
 <body class="font-sans text-gray-900 antialiased">
@@ -26,10 +29,18 @@
 
         <div
             class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-            {{ $slot }}
+            <input type="file" name="file" id="">
         </div>
     </div>
 
+    <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+    <script>
+        // Get a reference to the file input element
+        const inputElement = document.querySelector('input[type="file"]');
+    
+        // Create a FilePond instance
+        const pond = FilePond.create(inputElement);
+    </script>
 </body>
 
 </html>

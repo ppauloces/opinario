@@ -91,40 +91,54 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
+
             <x-alerts></x-alerts>
 
             @forelse ($companies as $company)
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-3 relative">
-                <div class="p-6 text-gray-900 dark:text-gray-100 flex justify-between items-center">
-                    <div class="company">
-                        <h3 class="text-lg font-semibold">{{ $company->razao_social }}
-                            @if($company->situacao == 1)
-                                <p class="ml-1 text-sm bg-green-500 text-white p-1 rounded-lg inline-block">Ativo</p>
-                            @else
-                                <p class="ml-1 text-sm bg-yellow-500 text-white p-1 rounded-lg inline-block">Inativo</p>
-                            @endif
-                        </h3>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $company->cidades->nome }} - {{ $company->estados->uf }}</p>
-                    </div>
-                    <div x-data="{ open: false }" class="relative">
-                        <button @click="open = !open" class="focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-600 dark:text-gray-400">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zm0 6a.75.75 0 110-1.5.75.75 0 010 1.5zm0 6a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-                            </svg>
-                        </button>
-                        <div x-show="open" @click.away="open = false" class="fixed right-0 mt-2 mr-16 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10">
-                            <a href="{{ route('company.edit', $company->id) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Editar empresa</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Opção 2</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Opção 3</a>
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-3 relative">
+                    <div class="p-6 text-gray-900 dark:text-gray-100 flex justify-between items-center">
+                        <div class="company">
+                            <h3 class="text-lg font-semibold">{{ $company->razao_social }}
+                                @if ($company->situacao == 1)
+                                    <p class="ml-1 text-sm bg-green-500 text-white p-1 rounded-lg inline-block">Ativo
+                                    </p>
+                                @else
+                                    <p class="ml-1 text-sm bg-yellow-500 text-white p-1 rounded-lg inline-block">Inativo
+                                    </p>
+                                @endif
+                            </h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $company->cidades->nome }} -
+                                {{ $company->estados->uf }}</p>
+                        </div>
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open" class="focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor"
+                                    class="w-6 h-6 text-gray-600 dark:text-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zm0 6a.75.75 0 110-1.5.75.75 0 010 1.5zm0 6a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                                </svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false"
+                                class="fixed right-0 mt-2 mr-16 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10">
+                                <a href="{{ route('company.edit', $company->id) }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Editar
+                                    empresa</a>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Opção
+                                    2</a>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Opção
+                                    3</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
+
             @empty
                 <p>Ops... Você não cadastrou nenhuma empresa ainda.</p>
             @endforelse
+            
         </div>
     </div>
 </x-app-layout>
