@@ -20,7 +20,7 @@ class CompanyController extends Controller
         $companies = Company::where('user_id', $user->id)
             ->with(['estados', 'cidades']) // Inclua as relações state e city
             ->get();
-        
+
         return view('dashboard', compact('companies', 'user'));
     }
 
@@ -56,16 +56,41 @@ class CompanyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function getCidades()
+    public function getCidades(string $id)
     {
-        $estado = Estado::with('Cidades')->get();
+        $cidades = Cidade::with('Estado')->where('estado_id', $id)->get();
 
-        // Obter todos as cidades da Bahia (codigo_uf = 29)
-        $cidades_bahia = Cidade::with('Estado')->where('estado_id', 29)->get();
+        return response()->json($cidades);
+    }
 
-        foreach ($cidades_bahia as $c) {
-            echo $c->nome . " - " . $c->estado->nome . '<br>';
+    public function getCep($cep)
+    {
+        $cep = preg_replace('/[^0-9]/', '', $cep);
+
+        //\Log::info('CEP Limpo:', ['cep' => $cep]);
+
+        $url = "https://viacep.com.br/ws/{$cep}/json/";
+
+        $response = Http::get($url);
+
+        if ($response->successful()) {
+            $data = $response->json();
+
+            $data = [
+                'cep' => $data['cep'],
+                'logradouro' => $data['logradouro'],
+                'complemento' => $data['complemento'],
+                'bairro' => $data['bairro']
+            ];
+
+            return response()->json($data);
+        }else{
+            return response()->json(['error' => 'Falha ao recuperar dados'], $response->status());
         }
+
+
+
+        //return response()->json(['cep' => $response->$logradouro]);
     }
 
     /**
@@ -131,9 +156,18 @@ class CompanyController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Company $company)
+    public function edit(string $id)
     {
-        //
+        $company = Company::find($id);
+
+        $estados = Estado::all();
+        $cidades = Cidade::all();
+
+        if (!$company) {
+            return redirect()->route('dashboard')->with('error', 'Registro não encontrado');
+        }
+
+        return view('company.edit', compact('company', 'estados', 'cidades'));
     }
 
     /**

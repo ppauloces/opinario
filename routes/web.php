@@ -21,6 +21,14 @@ Route::middleware('auth')->group(function () {
     //empresas
     Route::post('/search-cnpj', [CompanyController::class, 'searchCNPJ'])->name('search-cnpj');
     Route::post('/company', [CompanyController::class, 'store'])->name('company.store');
+    Route::post('/company', [CompanyController::class, 'store'])->name('company.store');
+    //exibir formulario de edicao
+    Route::get('/company/{company}/edit', [CompanyController::class, 'edit'])->name('company.edit');
+
+
+
+    Route::get('/cidades/{estado_id}', [CompanyController::class, 'getCidades']);
+    Route::get('/cep/{cep}', [CompanyController::class, 'getCep']);
 
 });
 
