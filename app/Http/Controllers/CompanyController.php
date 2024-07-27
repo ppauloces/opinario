@@ -6,10 +6,12 @@ use App\Models\Company;
 use App\Models\Estado;
 use App\Models\Cidade;
 use App\Models\User;
+use App\Http\Requests\CompanyUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Storage;
 
 class CompanyController extends Controller
 {
@@ -84,7 +86,7 @@ class CompanyController extends Controller
             ];
 
             return response()->json($data);
-        }else{
+        } else {
             return response()->json(['error' => 'Falha ao recuperar dados'], $response->status());
         }
 
@@ -134,13 +136,7 @@ class CompanyController extends Controller
             'atividade_principal' => $companies->estabelecimento->atividade_principal->descricao
         ];
 
-        $validator = Validator::make($data, Company::rules(), Company::feedback());
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $company = Company::create($data);
+        Company::create($data);
 
         return redirect()->route('dashboard')->with('success', 'Empresa cadastrada com sucesso!');
     }
@@ -173,10 +169,56 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Company $company)
+    public function update(CompanyUpdateRequest $request, string $id)
     {
-        //
+        $validatedData = $request->validated();
+
+        // Remover máscaras dos campos
+        $validatedData['cnpj'] = preg_replace('/\D/', '', $validatedData['cnpj']);
+        $validatedData['cep'] = preg_replace('/\D/', '', $validatedData['cep']);
+        $validatedData['telefone'] = preg_replace('/\D/', '', $validatedData['telefone']);
+
+        $company = Company::find($id);
+        if (!$company) {
+            return redirect()->route('dashboard')->with('error', 'Registro não encontrado');
+        }
+
+        if ($request->has('logo')) {
+
+            if ($company->logo) {
+                $oldLogoPath = public_path('uploads/' . $company->logo);
+                if (file_exists($oldLogoPath)) {
+                    unlink($oldLogoPath);
+                }
+            }
+            
+            $logoData = $request->input('logo');
+            // Decodificar o arquivo base64 e armazenar
+            list($type, $data) = explode(';', $logoData);
+            list(, $data) = explode(',', $data);
+            $data = base64_decode($data);
+
+            // Determinar a extensão do arquivo com base no tipo MIME
+            $mimeType = explode('/', mime_content_type($logoData))[1];
+
+            $razao_social_arquivo = str_replace(' ', '_', $validatedData['razao_social']);
+            $filename = $razao_social_arquivo . '_' . time() . '.' . $mimeType;
+
+            // Certificar-se de que o diretório 'uploads' existe
+            $uploadsPath = public_path('uploads');
+            if (!file_exists($uploadsPath)) {
+                mkdir($uploadsPath, 0755, true);
+            }
+
+            file_put_contents($uploadsPath . '/' . $filename, $data);
+            $validatedData['logo'] = $filename;
+        }
+
+        $company->update($validatedData);
+
+        return redirect()->route('company.edit', $company->id)->with('status', 'informacoes-atualizadas');
     }
+
 
     /**
      * Remove the specified resource from storage.

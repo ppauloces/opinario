@@ -1,4 +1,6 @@
+
 <section>
+   
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ 'Informações da empresa' }}
@@ -8,10 +10,11 @@
             {{ 'Atualize as informações que você considera necessárias.' }}
         </p>
     </header>
-
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <x-alerts></x-alerts>
+    <form method="post" id="company-form" action="{{ route('company.update', $company->id) }}" class="mt-6 space-y-6"
+        enctype="multipart/form-data">
         @csrf
-        @method('patch')
+        @method('put')
 
         <div>
             <x-input-label for="razao_social" :value="'Razão Social'" />
@@ -30,14 +33,14 @@
         <div>
             <x-input-label for="email" :value="'Email'" />
             <x-text-input id="email" name="email" type="text" class="mt-1 block w-full" :value="old('email', $company->email)"
-                required autofocus autocomplete="email" />
+                autofocus autocomplete="email" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
         </div>
 
         <div class="flex space-x-4 mt-4">
             <div class="flex-1 w-1/4">
                 <x-input-label for="ddd" :value="'DDD'" />
-                <x-text-input id="ddd" name="ddd" type="text" class="mt-1 block w-full" :value="'(' . old('ddd', $company->ddd) . ')'"
+                <x-text-input id="ddd" name="ddd" type="text" class="mt-1 block w-full" :value="old('ddd', $company->ddd)"
                     required autocomplete="ddd" />
                 <x-input-error class="mt-2" :messages="$errors->get('ddd')" />
             </div>
@@ -61,8 +64,9 @@
         <div x-data="fetchCidades()" x-init="init()" class="flex space-x-4">
             <div class="flex-1">
                 <x-input-label for="state" :value="'Estado'" />
-                <select id="state" name="state" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" x-on:change="fetchCidades"
-                    x-model="selectedEstado">
+                <select id="state" name="state"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                    x-on:change="fetchCidades" x-model="selectedEstado">
                     <option value="">Selecione um estado</option>
                     @foreach ($estados as $estado)
                         <option value="{{ $estado->id }}"
@@ -76,8 +80,9 @@
 
             <div class="flex-1 ml-2">
                 <x-input-label for="city" :value="'Cidade'" />
-                <select id="city" name="city" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required autofocus
-                    autocomplete="city_id" x-model="selectedCidade">
+                <select id="city" name="city"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                    required autofocus autocomplete="city_id" x-model="selectedCidade">
                     <option value="">Selecione uma cidade</option>
                     <template x-for="cidade in cidades" :key="cidade.id">
                         <option :value="cidade.id" x-text="cidade.nome"></option>
@@ -130,31 +135,70 @@
                     <x-input-error class="mt-2" :messages="$errors->get('numero')" />
                 </div>
             </div>
+        </div>
 
+        <hr>
+        <header>
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                {{ 'Logotipo' }}
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                {{ 'Adicione uma imagem que identifique sua empresa.' }}
+            </p>
+        </header>
+
+        @if($company->logo)
+        <img class="rounded w-36 h-36" src="{{ asset('uploads/' . $company->logo) }}" alt="{{ str_replace(' ', '_', $company->razao_social) }}">
+        @endif
+        <input type="hidden" id="base64Logo" name="logo">
+    
+        <div x-data x-init="() => {
+                const inputElement = $refs.input;
+                const pond = FilePond.create(inputElement, {
+                    labelIdle: 'Arraste e solte arquivos aqui ou clique para selecionar',
+                    labelFileWaitingForSize: 'Calculando tamanho do arquivo',
+                    labelFileProcessing: 'Processando arquivo',
+                    imagePreviewHeight: 170,
+                    allowProcess: false,
+                    allowRevert: false,
+                    allowRemove: true,
+                    allowReplace: true,
+                    server: {
+                        process: (fieldName, file, metadata, load, error, progress, abort) => {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(file);
+                            reader.onload = () => {
+                                document.querySelector('#base64Logo').value = reader.result;
+                                load(reader.result);
+                            };
+                            reader.onerror = error;
+                        }
+                    }
+                });
+    
+                document.querySelector('form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    pond.processFiles().then(() => {
+                        e.target.submit();
+                    });
+                });
+            }">
+            <input type="file" x-ref="input" name="logo">
+            <x-input-error class="mt-2" :messages="$errors->get('logo')" />
+        </div>
+
+
+        <div class="flex items-center gap-4">
+            <x-primary-button>{{ 'Salvar' }}</x-primary-button>
+
+            @if (session('status') === 'informacoes-atualizadas')
+                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
+                    class="text-sm text-gray-600 dark:text-gray-400">{{ 'Salvo' }}</p>
+            @endif
         </div>
     </form>
     <hr>
-
-    <hr class="my-4" />
-
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ 'Logotipo' }}
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ 'Adicione uma imagem que identifique sua empresa.' }}
-        </p>
-    </header>
-
-    <div x-data x-init="FilePond.create($refs.input, {
-        labelIdle: 'Arraste e solte arquivos aqui ou clique para selecionar',
-        labelFileWaitingForSize: 'Calculando tamanho do arquivo',
-        labelFileProcessing: 'Processando arquivo',
-        imagePreviewHeight: 170
-      })">
-        <input type="file" x-ref="input" class="">
-      </div>
 </section>
 
 
