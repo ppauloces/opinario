@@ -23,6 +23,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/cep/{cep}', [CompanyController::class, 'getCep']);
     Route::post('/company', [CompanyController::class, 'store'])->name('company.store');
     Route::post('/company', [CompanyController::class, 'store'])->name('company.store');
+
+    //exibir formulario de criacao manual
+    Route::get('/company/create', [CompanyController::class, 'create'])->name('company.create');
+
     //exibir formulario de edicao
     Route::get('/company/{company}/edit', [CompanyController::class, 'edit'])->name('company.edit');
     Route::put('/company/{company}', [CompanyController::class, 'update'])->name('company.update');

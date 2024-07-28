@@ -58,7 +58,7 @@
                         <p class="mt-1 text-base text-gray-600 dark:text-gray-400" x-text="companyName">
                             {{ 'NOME DA EMPRESA' }}
                         </p>
-                        <a x-show="companyName !== ''" href="#"
+                        <a x-show="companyName !== ''" href="{{route('company.create')}}"
                             class="mt-1 text-sm text-blue-600 visited:text-blue-600">
                             Empresa incorreta? Cadastre manualmente.
                         </a>
