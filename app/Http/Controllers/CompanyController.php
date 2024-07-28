@@ -112,9 +112,9 @@ class CompanyController extends Controller
      */
     public function store(CompanyStoreRequest $request)
     {
+        
         $data = $request->validated();
-
-
+        
         //cnpj
         $cnpjMascarado = $request->input('cnpj');
         $cnpj = preg_replace('/[^0-9]/', '', $cnpjMascarado);
@@ -132,7 +132,7 @@ class CompanyController extends Controller
         //corpo json das outras informações
         $companies = $request->input('companyResponse');
         $companies = json_decode($companies);
-
+        
         $existingCompany = Company::where('cnpj', $cnpj)->first();
 
         if ($existingCompany) {
@@ -157,7 +157,7 @@ class CompanyController extends Controller
             'telefone' => $companies->estabelecimento->telefone1 ?? $telefone,
             'atividade_principal' => $companies->estabelecimento->atividade_principal->descricao ?? '',
         ];
-
+        
         Company::create($data);
 
         return redirect()->route('dashboard')->with('success', 'Empresa cadastrada com sucesso!');

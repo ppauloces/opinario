@@ -10,7 +10,6 @@
                 Nova empresa
             </x-primary-button>
 
-
             {{-- Início da modal --}}
             <x-modal name="cadastrar-empresa" focusable>
                 <form method="post" action="{{ route('company.store') }}" x-data="companySearch()" class="p-6">
@@ -88,56 +87,49 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
             <x-alerts></x-alerts>
-
+        
             @forelse ($companies as $company)
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-3 relative">
+                <div class="bg-white dark:bg-gray-800 overflow-visible shadow-sm sm:rounded-lg mt-3 relative">
                     <div class="p-6 text-gray-900 dark:text-gray-100 flex justify-between items-center">
                         <div class="company">
                             <h3 class="text-lg font-semibold">{{ $company->razao_social }}
                                 @if ($company->situacao == 1)
-                                    <p class="ml-1 text-sm bg-green-500 text-white p-1 rounded-lg inline-block">Ativo
-                                    </p>
+                                    <p class="ml-1 text-sm bg-green-500 text-white p-1 rounded-lg inline-block">Ativo</p>
                                 @else
-                                    <p class="ml-1 text-sm bg-yellow-500 text-white p-1 rounded-lg inline-block">Inativo
-                                    </p>
+                                    <p class="ml-1 text-sm bg-yellow-500 text-white p-1 rounded-lg inline-block">Inativo</p>
                                 @endif
                             </h3>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $company->cidades->nome }} -
-                                {{ $company->estados->uf }}</p>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $company->cidades->nome }} - {{ $company->estados->uf }}</p>
                         </div>
                         <div x-data="{ open: false }" class="relative">
                             <button @click="open = !open" class="focus:outline-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="w-6 h-6 text-gray-600 dark:text-gray-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zm0 6a.75.75 0 110-1.5.75.75 0 010 1.5zm0 6a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-600 dark:text-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zm0 6a.75.75 0 110-1.5.75.75 0 010 1.5zm0 6a.75.75 0 110-1.5.75.75 0 010 1.5z" />
                                 </svg>
                             </button>
-                            <div x-show="open" @click.away="open = false"
-                                class="fixed right-0 mt-2 mr-16 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10">
-                                <a href="{{ route('company.edit', $company->id) }}"
-                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Editar
-                                    empresa</a>
-                                <a href="#"
-                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Opção
-                                    2</a>
-                                <a href="#"
-                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Opção
-                                    3</a>
+                            <div x-show="open" @click.away="open = false" 
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
+                                <a href="{{ route('company.edit',$company->id) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">Editar</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">Opção 2</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">Opção 3</a>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                 </div>
-
             @empty
-                <p>Ops... Você não cadastrou nenhuma empresa ainda.</p>
+                <p>Nenhuma empresa encontrada.</p>
             @endforelse
-            
-        </div>
+        </div>        
     </div>
+    
+    
 </x-app-layout>
 
 <script>
